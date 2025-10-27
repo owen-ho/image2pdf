@@ -163,6 +163,30 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .pdf-title-input {
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 3px solid white;
+            border-radius: 25px;
+            background: white;
+            color: #333;
+            min-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .pdf-title-input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .pdf-title-input::placeholder {
+            color: #999;
         }
 
         .btn {
@@ -224,6 +248,11 @@
                 padding: 12px 25px;
                 font-size: 1em;
             }
+
+            .pdf-title-input {
+                min-width: 100%;
+                order: -1;
+            }
         }
     </style>
 </head>
@@ -244,6 +273,13 @@
         </div>
 
         <div class="action-buttons" id="actionButtons" style="display: none;">
+            <input 
+                type="text" 
+                id="pdfTitle" 
+                class="pdf-title-input" 
+                placeholder="Enter PDF filename (optional)"
+                value="combined-images"
+            >
             <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
             <button class="btn btn-primary" onclick="generatePDF()">Generate PDF</button>
         </div>
@@ -404,7 +440,15 @@
                 });
             }
             
-            pdf.save('combined-images.pdf');
+            // Get custom filename or use default
+            let filename = document.getElementById('pdfTitle').value.trim();
+            if (!filename) {
+                filename = 'combined-images';
+            }
+            // Remove .pdf extension if user added it
+            filename = filename.replace(/\.pdf$/i, '');
+            
+            pdf.save(`${filename}.pdf`);
         }
 
         // Initial render
