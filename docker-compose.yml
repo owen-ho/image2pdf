@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  image-to-pdf:
+    build: .
+    container_name: image-to-pdf-converter
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
