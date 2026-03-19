@@ -166,6 +166,135 @@
             align-items: center;
         }
 
+        .settings-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .settings-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px 16px;
+            align-items: end;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setting-item label {
+            font-size: 0.9em;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .setting-control {
+            width: 100%;
+            padding: 9px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: #fff;
+        }
+
+        .setting-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-note {
+            margin-top: 12px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .diagnostics {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .diagnostics h2 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .diagnostics-summary {
+            margin-bottom: 12px;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .diagnostics-table-wrap {
+            overflow-x: auto;
+        }
+
+        .diagnostics table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 780px;
+        }
+
+        .diagnostics th,
+        .diagnostics td {
+            text-align: left;
+            border-bottom: 1px solid #ececec;
+            padding: 9px 8px;
+            font-size: 0.9em;
+        }
+
+        .diagnostics th {
+            color: #444;
+            font-weight: 700;
+            background: #f7f8ff;
+        }
+
+        .badge {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .badge-good {
+            background: #e7f8ef;
+            color: #137a46;
+        }
+
+        .badge-warn {
+            background: #fff5df;
+            color: #916500;
+        }
+
+        .badge-bad {
+            background: #ffe7ea;
+            color: #ab1d35;
+        }
+
         .pdf-title-input {
             padding: 15px 20px;
             font-size: 1.1em;
@@ -253,6 +382,10 @@
                 min-width: 100%;
                 order: -1;
             }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -271,6 +404,87 @@
         <div id="imagesContainer">
             <div class="empty-state">No images added yet. Add some images to get started!</div>
         </div>
+
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-title">PDF quality controls</div>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label for="imageEncoding">Image format in PDF</label>
+                    <select id="imageEncoding" class="setting-control" onchange="updateSettingsUI()">
+                        <option value="auto" selected>Auto (keep PNG when possible)</option>
+                        <option value="jpeg">Force JPEG</option>
+                        <option value="png">Force PNG</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label for="jpegCompression">JPEG compression speed</label>
+                    <select id="jpegCompression" class="setting-control">
+                        <option value="NONE">NONE (best quality, larger files)</option>
+                        <option value="SLOW" selected>SLOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="FAST">FAST (smallest, blurriest)</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label for="pageMode">Page size</label>
+                    <select id="pageMode" class="setting-control">
+                        <option value="a4" selected>A4</option>
+                        <option value="letter">Letter</option>
+                        <option value="source">Match source image size</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label for="pageOrientation">Page orientation</label>
+                    <select id="pageOrientation" class="setting-control">
+                        <option value="auto" selected>Auto</option>
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label for="fitMode">Layout mode</label>
+                    <select id="fitMode" class="setting-control">
+                        <option value="contain" selected>Fill page (contain)</option>
+                        <option value="actual">Actual print size (from DPI)</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <label for="targetDpi">Target print DPI</label>
+                    <input id="targetDpi" class="setting-control" type="number" min="72" max="600" value="300">
+                </div>
+
+                <div class="setting-item">
+                    <label for="marginMm">Margin (mm)</label>
+                    <input id="marginMm" class="setting-control" type="number" min="0" max="40" value="8">
+                </div>
+
+                <div class="setting-item">
+                    <label for="jpegQuality">JPEG quality: <span id="jpegQualityValue">0.92</span></label>
+                    <input id="jpegQuality" class="setting-control" type="range" min="0.4" max="1" step="0.01" value="0.92" oninput="updateJpegQualityValue()">
+                </div>
+            </div>
+
+            <div class="setting-row" style="margin-top: 14px;">
+                <input id="preventUpscale" type="checkbox" checked>
+                <label for="preventUpscale">Prevent upscaling (recommended for sharpness)</label>
+            </div>
+
+            <div class="setting-row" style="margin-top: 8px;">
+                <input id="reencodeImages" type="checkbox">
+                <label for="reencodeImages">Re-encode images before embedding (useful for testing compression impact)</label>
+            </div>
+
+            <div class="setting-note">
+                Tip: generate multiple PDFs while changing one setting at a time, then compare sharpness against Acrobat export.
+            </div>
+        </div>
+
+        <div class="diagnostics" id="diagnosticsPanel"></div>
 
         <div class="action-buttons" id="actionButtons" style="display: none;">
             <input 
@@ -292,6 +506,8 @@
         const fileInput = document.getElementById('fileInput');
         const imagesContainer = document.getElementById('imagesContainer');
         const actionButtons = document.getElementById('actionButtons');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const diagnosticsPanel = document.getElementById('diagnosticsPanel');
 
         // Paste event listener
         document.addEventListener('paste', (e) => {
@@ -299,7 +515,7 @@
             for (let item of items) {
                 if (item.type.indexOf('image') !== -1) {
                     const file = item.getAsFile();
-                    addImage(file);
+                    addImage(file, `pasted-${Date.now()}`);
                 }
             }
         });
@@ -334,12 +550,14 @@
             }
         }
 
-        function addImage(file) {
+        function addImage(file, fallbackName = '') {
             const reader = new FileReader();
             reader.onload = (e) => {
                 images.push({
                     data: e.target.result,
-                    tag: ''
+                    tag: '',
+                    name: file?.name || fallbackName || `image-${images.length + 1}`,
+                    mimeType: file?.type || ''
                 });
                 renderImages();
             };
@@ -354,10 +572,13 @@
             if (images.length === 0) {
                 imagesContainer.innerHTML = '<div class="empty-state">No images added yet. Add some images to get started!</div>';
                 actionButtons.style.display = 'none';
+                settingsPanel.style.display = 'none';
+                diagnosticsPanel.style.display = 'none';
                 return;
             }
 
             actionButtons.style.display = 'flex';
+            settingsPanel.style.display = 'block';
             
             let html = '<div class="images-grid">';
             images.forEach((img, index) => {
@@ -395,6 +616,181 @@
             }
         }
 
+        function updateJpegQualityValue() {
+            const value = document.getElementById('jpegQuality').value;
+            document.getElementById('jpegQualityValue').textContent = Number(value).toFixed(2);
+        }
+
+        function updateSettingsUI() {
+            const mode = document.getElementById('imageEncoding').value;
+            const showJpegControls = mode !== 'png';
+            document.getElementById('jpegQuality').disabled = !showJpegControls;
+            document.getElementById('jpegCompression').disabled = !showJpegControls;
+        }
+
+        function getDataUrlMimeType(dataUrl) {
+            const match = /^data:(.*?);base64,/i.exec(dataUrl || '');
+            return match ? match[1].toLowerCase() : '';
+        }
+
+        function resolveOutputFormat(image, settings) {
+            if (settings.imageEncoding === 'jpeg') {
+                return 'JPEG';
+            }
+            if (settings.imageEncoding === 'png') {
+                return 'PNG';
+            }
+
+            const mime = (image.mimeType || getDataUrlMimeType(image.data) || '').toLowerCase();
+            return mime.includes('png') ? 'PNG' : 'JPEG';
+        }
+
+        function readSettings() {
+            const dpi = Number(document.getElementById('targetDpi').value);
+            const margin = Number(document.getElementById('marginMm').value);
+            return {
+                imageEncoding: document.getElementById('imageEncoding').value,
+                jpegQuality: Number(document.getElementById('jpegQuality').value),
+                jpegCompression: document.getElementById('jpegCompression').value,
+                pageMode: document.getElementById('pageMode').value,
+                pageOrientation: document.getElementById('pageOrientation').value,
+                fitMode: document.getElementById('fitMode').value,
+                targetDpi: Number.isFinite(dpi) && dpi >= 72 ? dpi : 300,
+                marginMm: Number.isFinite(margin) && margin >= 0 ? margin : 8,
+                preventUpscale: document.getElementById('preventUpscale').checked,
+                reencodeImages: document.getElementById('reencodeImages').checked
+            };
+        }
+
+        function getPageConfig(img, settings, hasTag) {
+            const fixedSizes = {
+                a4: [210, 297],
+                letter: [215.9, 279.4]
+            };
+
+            let widthMm;
+            let heightMm;
+
+            if (settings.pageMode === 'source') {
+                widthMm = (img.width * 25.4) / settings.targetDpi + (settings.marginMm * 2);
+                heightMm = (img.height * 25.4) / settings.targetDpi + (settings.marginMm * 2) + (hasTag ? 8 : 0);
+                widthMm = Math.max(widthMm, 50);
+                heightMm = Math.max(heightMm, 50);
+            } else {
+                [widthMm, heightMm] = fixedSizes[settings.pageMode] || fixedSizes.a4;
+            }
+
+            let orientation = settings.pageOrientation;
+            if (orientation === 'auto') {
+                orientation = img.width >= img.height ? 'landscape' : 'portrait';
+            }
+
+            const isLandscapeShape = widthMm > heightMm;
+            if ((orientation === 'landscape' && !isLandscapeShape) || (orientation === 'portrait' && isLandscapeShape)) {
+                [widthMm, heightMm] = [heightMm, widthMm];
+            }
+
+            return {
+                widthMm,
+                heightMm,
+                orientation
+            };
+        }
+
+        function calculatePlacement(img, pageConfig, settings, hasTag) {
+            const naturalWidthMm = (img.width * 25.4) / settings.targetDpi;
+            const naturalHeightMm = (img.height * 25.4) / settings.targetDpi;
+            const tagReserve = hasTag ? 8 : 0;
+            const usableWidth = Math.max(pageConfig.widthMm - (settings.marginMm * 2), 10);
+            const usableHeight = Math.max(pageConfig.heightMm - (settings.marginMm * 2) - tagReserve, 10);
+
+            let scale;
+            if (settings.fitMode === 'actual') {
+                scale = Math.min(1, usableWidth / naturalWidthMm, usableHeight / naturalHeightMm);
+            } else {
+                scale = Math.min(usableWidth / naturalWidthMm, usableHeight / naturalHeightMm);
+                if (settings.preventUpscale) {
+                    scale = Math.min(scale, 1);
+                }
+            }
+
+            const width = naturalWidthMm * scale;
+            const height = naturalHeightMm * scale;
+            const x = (pageConfig.widthMm - width) / 2;
+            const y = settings.marginMm + Math.max(0, (usableHeight - height) / 2);
+            const effectiveDpiX = img.width / (width / 25.4);
+            const effectiveDpiY = img.height / (height / 25.4);
+
+            return {
+                x,
+                y,
+                width,
+                height,
+                scale,
+                effectiveDpiX,
+                effectiveDpiY
+            };
+        }
+
+        async function maybeReencodeImage(img, format, settings, sourceData) {
+            if (!settings.reencodeImages) {
+                return sourceData;
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            if (format === 'JPEG') {
+                return canvas.toDataURL('image/jpeg', settings.jpegQuality);
+            }
+            return canvas.toDataURL('image/png');
+        }
+
+        function getDpiBadge(dpi) {
+            if (dpi >= 300) {
+                return '<span class="badge badge-good">Excellent</span>';
+            }
+            if (dpi >= 180) {
+                return '<span class="badge badge-warn">Acceptable</span>';
+            }
+            return '<span class="badge badge-bad">Likely blurry</span>';
+        }
+
+        function renderDiagnostics(rows, settings) {
+            if (!rows.length) {
+                diagnosticsPanel.style.display = 'none';
+                return;
+            }
+
+            const minDpi = Math.min(...rows.map((row) => row.dpi));
+            const lowDpiCount = rows.filter((row) => row.dpi < 180).length;
+
+            let html = '<h2>Last export diagnostics</h2>';
+            html += `<div class="diagnostics-summary">Mode: ${settings.imageEncoding.toUpperCase()}, Re-encode: ${settings.reencodeImages ? 'On' : 'Off'}, Fit: ${settings.fitMode}, Min DPI: ${minDpi.toFixed(1)}${lowDpiCount > 0 ? `, low-DPI pages: ${lowDpiCount}` : ''}</div>`;
+            html += '<div class="diagnostics-table-wrap"><table>';
+            html += '<thead><tr><th>#</th><th>Image</th><th>Output format</th><th>Source px</th><th>Placed size (mm)</th><th>Effective DPI</th><th>Scale</th><th>Assessment</th></tr></thead><tbody>';
+
+            rows.forEach((row) => {
+                html += '<tr>';
+                html += `<td>${row.index}</td>`;
+                html += `<td>${row.name}</td>`;
+                html += `<td>${row.format}</td>`;
+                html += `<td>${row.widthPx} x ${row.heightPx}</td>`;
+                html += `<td>${row.widthMm.toFixed(1)} x ${row.heightMm.toFixed(1)}</td>`;
+                html += `<td>${row.dpi.toFixed(1)}</td>`;
+                html += `<td>${(row.scale * 100).toFixed(1)}%</td>`;
+                html += `<td>${getDpiBadge(row.dpi)}</td>`;
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
+            diagnosticsPanel.innerHTML = html;
+            diagnosticsPanel.style.display = 'block';
+        }
+
         async function generatePDF() {
             if (images.length === 0) {
                 alert('Please add at least one image!');
@@ -402,40 +798,64 @@
             }
 
             const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
+            const settings = readSettings();
+            const diagnosticsRows = [];
+            let pdf;
             
             for (let i = 0; i < images.length; i++) {
-                if (i > 0) {
-                    pdf.addPage();
-                }
-                
                 const img = new Image();
                 img.src = images[i].data;
                 
                 await new Promise((resolve) => {
                     img.onload = () => {
-                        const pageWidth = pdf.internal.pageSize.getWidth();
-                        const pageHeight = pdf.internal.pageSize.getHeight();
-                        
-                        const imgWidth = img.width;
-                        const imgHeight = img.height;
-                        const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-                        
-                        const width = imgWidth * ratio;
-                        const height = imgHeight * ratio;
-                        const x = (pageWidth - width) / 2;
-                        const y = (pageHeight - height) / 2;
-                        
-                        pdf.addImage(images[i].data, 'JPEG', x, y, width, height);
-                        
-                        // Add tag as text if it exists
-                        if (images[i].tag && images[i].tag.trim() !== '') {
-                            pdf.setFontSize(12);
-                            pdf.setTextColor(100, 100, 100);
-                            pdf.text(images[i].tag, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                        const hasTag = Boolean(images[i].tag && images[i].tag.trim() !== '');
+                        const pageConfig = getPageConfig(img, settings, hasTag);
+
+                        if (!pdf) {
+                            pdf = new jsPDF({
+                                orientation: pageConfig.orientation,
+                                unit: 'mm',
+                                format: [pageConfig.widthMm, pageConfig.heightMm]
+                            });
+                        } else {
+                            pdf.addPage([pageConfig.widthMm, pageConfig.heightMm], pageConfig.orientation);
                         }
+
+                        const format = resolveOutputFormat(images[i], settings);
+                        maybeReencodeImage(img, format, settings, images[i].data).then((imageData) => {
+                            const placement = calculatePlacement(img, pageConfig, settings, hasTag);
+                            pdf.addImage(
+                                imageData,
+                                format,
+                                placement.x,
+                                placement.y,
+                                placement.width,
+                                placement.height,
+                                undefined,
+                                settings.jpegCompression
+                            );
+
+                            diagnosticsRows.push({
+                                index: i + 1,
+                                name: images[i].name || `image-${i + 1}`,
+                                format,
+                                widthPx: img.width,
+                                heightPx: img.height,
+                                widthMm: placement.width,
+                                heightMm: placement.height,
+                                dpi: Math.min(placement.effectiveDpiX, placement.effectiveDpiY),
+                                scale: placement.scale
+                            });
                         
-                        resolve();
+                            // Keep tags as vector text so they stay sharp.
+                            if (hasTag) {
+                                pdf.setFontSize(10);
+                                pdf.setTextColor(100, 100, 100);
+                                pdf.text(images[i].tag, pageConfig.widthMm / 2, pageConfig.heightMm - 4, { align: 'center' });
+                            }
+
+                            resolve();
+                        });
                     };
                 });
             }
@@ -448,10 +868,13 @@
             // Remove .pdf extension if user added it
             filename = filename.replace(/\.pdf$/i, '');
             
+            renderDiagnostics(diagnosticsRows, settings);
             pdf.save(`${filename}.pdf`);
         }
 
         // Initial render
+        updateJpegQualityValue();
+        updateSettingsUI();
         renderImages();
     </script>
 </body>
