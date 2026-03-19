@@ -494,6 +494,7 @@
                 placeholder="Enter PDF filename (optional)"
                 value="combined-images"
             >
+            <button class="btn btn-secondary" id="advancedOptionsBtn" onclick="toggleAdvancedOptions()">Show Advanced Options</button>
             <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
             <button class="btn btn-primary" onclick="generatePDF()">Generate PDF</button>
         </div>
@@ -508,6 +509,8 @@
         const actionButtons = document.getElementById('actionButtons');
         const settingsPanel = document.getElementById('settingsPanel');
         const diagnosticsPanel = document.getElementById('diagnosticsPanel');
+        const advancedOptionsBtn = document.getElementById('advancedOptionsBtn');
+        let showAdvancedOptions = false;
 
         // Paste event listener
         document.addEventListener('paste', (e) => {
@@ -574,11 +577,14 @@
                 actionButtons.style.display = 'none';
                 settingsPanel.style.display = 'none';
                 diagnosticsPanel.style.display = 'none';
+                showAdvancedOptions = false;
+                advancedOptionsBtn.textContent = 'Show Advanced Options';
                 return;
             }
 
             actionButtons.style.display = 'flex';
-            settingsPanel.style.display = 'block';
+            settingsPanel.style.display = showAdvancedOptions ? 'block' : 'none';
+            advancedOptionsBtn.textContent = showAdvancedOptions ? 'Hide Advanced Options' : 'Show Advanced Options';
             
             let html = '<div class="images-grid">';
             images.forEach((img, index) => {
@@ -614,6 +620,12 @@
                 images = [];
                 renderImages();
             }
+        }
+
+        function toggleAdvancedOptions() {
+            showAdvancedOptions = !showAdvancedOptions;
+            settingsPanel.style.display = showAdvancedOptions ? 'block' : 'none';
+            advancedOptionsBtn.textContent = showAdvancedOptions ? 'Hide Advanced Options' : 'Show Advanced Options';
         }
 
         function updateJpegQualityValue() {
